@@ -54,7 +54,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddControllers();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -64,14 +65,36 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    using (var serviceScope = app.Services.CreateScope())
+    {
+        //Access injected services
+        var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+        SeedAdministratorRoleAndUser.Seed(roleManager, userManager).Wait();
+    }
+    app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI(swaggerUIOptions =>
+{
+    swaggerUIOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "Jimmy Purnell Server API");
+    swaggerUIOptions.RoutePrefix = string.Empty;
+});
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
