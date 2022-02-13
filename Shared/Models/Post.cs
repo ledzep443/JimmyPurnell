@@ -36,6 +36,6 @@ namespace Shared.Models
 
         [Required]
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public BlogCategory Category { get; set; }
     }
 }

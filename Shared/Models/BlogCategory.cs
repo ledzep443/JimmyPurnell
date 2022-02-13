@@ -2,7 +2,7 @@
 
 namespace Shared.Models
 {
-    public class Category
+    public class BlogCategory
     {
         [Key]
         public int CategoryId { get; set; }

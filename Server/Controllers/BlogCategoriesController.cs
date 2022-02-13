@@ -9,11 +9,11 @@ namespace Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CategoriesController : ControllerBase
+    public class BlogCategoriesController : ControllerBase
     {
         private readonly AppDbContext _appDBContext;
 
-        public CategoriesController(AppDbContext appDbContext)
+        public BlogCategoriesController(AppDbContext appDbContext)
         {
             _appDBContext = appDbContext;
         }
@@ -22,7 +22,7 @@ namespace Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            List<Category> categories = await _appDBContext.Categories.ToListAsync();
+            List<BlogCategory> categories = await _appDBContext.Categories.ToListAsync();
 
             return Ok(categories);
         }
@@ -30,17 +30,17 @@ namespace Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetWithPosts()
         {
-            List<Category> categoties = await _appDBContext.Categories
+            List<BlogCategory> categories = await _appDBContext.Categories
                 .Include(category => category.Posts)
                 .ToListAsync();
 
-            return Ok(categoties);
+            return Ok(categories);
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Get(int id)
         {
-            Category category = await GetCategoryByCategoryId(id, true);
+            BlogCategory category = await GetCategoryByCategoryId(id, true);
 
             return Ok(category);
         }
@@ -48,9 +48,9 @@ namespace Server.Controllers
 
         [NonAction]
         [ApiExplorerSettings(IgnoreApi = true)]
-        private async Task<Category> GetCategoryByCategoryId(int categoryId, bool withPosts)
+        private async Task<BlogCategory> GetCategoryByCategoryId(int categoryId, bool withPosts)
         {
-            Category categoryToGet = null;
+            BlogCategory categoryToGet = null;
 
             if (withPosts == true)
             {

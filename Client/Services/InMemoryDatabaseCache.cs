@@ -14,8 +14,8 @@ namespace Client.Services
             _httpClient = httpClient;
         }
         #region categories
-        private List<Category> _categories = null;
-        internal List<Category> Categories
+        private List<BlogCategory> _categories = null;
+        internal List<BlogCategory> Categories
         {
             get
             {
@@ -29,31 +29,31 @@ namespace Client.Services
             }
         }
 
-        internal async Task<Category> GetCategoryByCategoryId(int categoryId, bool withPosts)
+        internal async Task<BlogCategory> GetCategoryByCategoryId(int categoryId, bool withPosts)
         {
             if (_categories == null)
             {
                 await GetCategoriesFromDatabaseAndCache(withPosts);
             }
 
-            Category categoryToReturn = _categories.First(category => category.CategoryId == categoryId);
+            BlogCategory categoryToReturn = _categories.First(category => category.CategoryId == categoryId);
 
             if(categoryToReturn.Posts == null && withPosts == true)
             {
-                categoryToReturn = await _httpClient.GetFromJsonAsync<Category>($"{ APIEndpoints.s_categoriesWithPosts}/{ categoryToReturn.CategoryId}");
+                categoryToReturn = await _httpClient.GetFromJsonAsync<BlogCategory>($"{ APIEndpoints.s_categoriesWithPosts}/{ categoryToReturn.CategoryId}");
             }
 
             return categoryToReturn;
         }
 
-        internal async Task<Category> GetCategoryFromCategoryName(string categoryName, bool withPosts, bool nameToLowerFromUrl)
+        internal async Task<BlogCategory> GetCategoryByCategoryName(string categoryName, bool withPosts, bool nameToLowerFromUrl)
         {
             if (_categories == null)
             {
                 await GetCategoriesFromDatabaseAndCache(withPosts);
             }
 
-            Category categoryToReturn = null;
+            BlogCategory categoryToReturn = null;
 
             if (nameToLowerFromUrl == true)
             {
@@ -66,7 +66,7 @@ namespace Client.Services
 
             if (categoryToReturn.Posts == null && withPosts == true)
             {
-                categoryToReturn = await _httpClient.GetFromJsonAsync<Category>($"{APIEndpoints.s_categoriesWithPosts}/{categoryToReturn.CategoryId}");
+                categoryToReturn = await _httpClient.GetFromJsonAsync<BlogCategory>($"{APIEndpoints.s_categoriesWithPosts}/{categoryToReturn.CategoryId}");
             }
 
             return categoryToReturn;
@@ -80,7 +80,7 @@ namespace Client.Services
             {
                 _gettingCategoriesFromDatabaseAndCaching = true;
 
-                List<Category> categoriesFromDatabase = null;
+                List<BlogCategory> categoriesFromDatabase = null;
 
                 if (_categories != null)
                 {
@@ -89,11 +89,11 @@ namespace Client.Services
 
                 if (withPosts == true)
                 {
-                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<Category>>(APIEndpoints.s_categoriesWithPosts);
+                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<BlogCategory>>(APIEndpoints.s_categoriesWithPosts);
                 }
                 else
                 {
-                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<Category>>(APIEndpoints.s_categories);
+                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<BlogCategory>>(APIEndpoints.s_categories);
                 }
 
                 _categories = categoriesFromDatabase.OrderByDescending(category => category.CategoryId).ToList();
@@ -108,7 +108,7 @@ namespace Client.Services
                         {
                             foreach (var post in category.Posts)
                             {
-                                Category postCategoryWithoutPosts = new Category
+                                BlogCategory postCategoryWithoutPosts = new BlogCategory
                                 {
                                     CategoryId = category.CategoryId,
                                     ThumbnailImagePath = category.ThumbnailImagePath,

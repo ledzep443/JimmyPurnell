@@ -6,8 +6,10 @@ namespace Server.Data
 {
     public class AppDbContext : IdentityDbContext
     {
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<BlogCategory> Categories { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<ProjectCategory> ProjectCategories { get; set; }
+        public DbSet<Project> Projects { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {  }
 
@@ -17,11 +19,11 @@ namespace Server.Data
 
             #region Categories seed
 
-            Category[] categoriesToSeed = new Category[6];
+            BlogCategory[] categoriesToSeed = new BlogCategory[6];
 
             for(int i = 1; i < 7; i++)
             {
-                categoriesToSeed[i - 1] = new Category
+                categoriesToSeed[i - 1] = new BlogCategory
                 {
                     CategoryId = i,
                     ThumbnailImagePath = "uploads/placeholder.jpg",
@@ -30,7 +32,7 @@ namespace Server.Data
                 };
             }
 
-            modelBuilder.Entity<Category>().HasData(categoriesToSeed);
+            modelBuilder.Entity<BlogCategory>().HasData(categoriesToSeed);
 
             #endregion
 
