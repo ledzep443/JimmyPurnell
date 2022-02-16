@@ -6,7 +6,7 @@ namespace Server.Data
 {
     public class AppDbContext : IdentityDbContext
     {
-        public DbSet<BlogCategory> Categories { get; set; }
+        public DbSet<BlogCategory> BlogCategories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
         public DbSet<Project> Projects { get; set; }
