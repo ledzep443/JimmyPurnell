@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.Models
 {
-    public class Project
+    public class ProjectDTO
     {
         [Key]
         public int Id { get; set; }
@@ -11,12 +13,11 @@ namespace Shared.Models
         public string Name { get; set; }
         [Required]
         public string Description { get; set; }
-        public string URL { get; set; } 
+        public string URL { get; set; }
         public string GitHub { get; set; }
         [Required]
         public bool IsPublic { get; set; }
         [Required]
         public int ProjectCategoryId { get; set; }
-        public ProjectCategory Category { get; set; }
     }
 }

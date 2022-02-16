@@ -1,0 +1,23 @@
+﻿
+@code {
+    [Parameter] public string CategoryName { get; set; }
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    private ProjectCategory _projectCategory = null;
+    private List<Project> _publishedProjects = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_publishedProjects == null)
+        {
+
+        }
+        if (_projectCategory.Projects.Count != 1)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
+}

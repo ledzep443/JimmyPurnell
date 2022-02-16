@@ -5,7 +5,7 @@ namespace Shared.Models
     public class ProjectCategory
     {
         [Key]
-        public int CategoryId { get; set; }
+        public int ProjectCategoryId { get; set; }
         [Required]
         [MaxLength(256)]
         public string ThumbnailImagePath { get; set; }

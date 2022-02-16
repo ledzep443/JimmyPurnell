@@ -56,12 +56,12 @@ namespace Server.Controllers
             {
                 categoryToGet = await _appDbContext.ProjectCategories
                     .Include(category => category.Projects)
-                    .FirstAsync(category => category.CategoryId == id);
+                    .FirstAsync(category => category.ProjectCategoryId == id);
             }
             else
             {
                 categoryToGet = await _appDbContext.ProjectCategories
-                    .FirstAsync(category => category.CategoryId == id);
+                    .FirstAsync(category => category.ProjectCategoryId == id);
             }
 
             return categoryToGet;

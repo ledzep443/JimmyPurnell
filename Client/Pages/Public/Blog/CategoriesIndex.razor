@@ -122,7 +122,7 @@
 		{
 			await InMemoryDatabaseCache.GetCategoriesFromDatabaseAndCache(false);
 		}
-		_category = await InMemoryDatabaseCache.GetCategoryByCategoryName(CategoryName.ConvertURLToTitle(), true, true);
+		_category = await InMemoryDatabaseCache.GetCategoryByCategoryName(CategoryName.ConvertUrlToTitle(), true, true);
 
 		if (_category.Posts.Count != 0)
 		{

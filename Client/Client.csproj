@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Components\Admin\" />
+    <Folder Include="Providers\" />
   </ItemGroup>
 
 </Project>
