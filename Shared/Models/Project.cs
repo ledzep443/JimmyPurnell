@@ -11,10 +11,13 @@ namespace Shared.Models
         public string Name { get; set; }
         [Required]
         public string Description { get; set; }
+        public string ScreenshotImagePath { get; set; }
         public string URL { get; set; } 
         public string GitHub { get; set; }
         [Required]
-        public bool IsPublic { get; set; }
+        public bool IsPublished { get; set; }
+        [Required]
+        public string PublishDate { get; set; }
         [Required]
         public int ProjectCategoryId { get; set; }
         public ProjectCategory Category { get; set; }
