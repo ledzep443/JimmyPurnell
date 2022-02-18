@@ -238,11 +238,11 @@ namespace Client.Services
 
                 if (withProjects == true)
                 {
-                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<ProjectCategory>>(APIEndpoints.s_categoriesWithPosts);
+                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<ProjectCategory>>(APIEndpoints.s_projectCategoriesWithProjects);
                 }
                 else
                 {
-                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<ProjectCategory>>(APIEndpoints.s_categories);
+                    categoriesFromDatabase = await _httpClient.GetFromJsonAsync<List<ProjectCategory>>(APIEndpoints.s_projectCategories);
                 }
 
                 _projectCategories = categoriesFromDatabase.OrderByDescending(category => category.ProjectCategoryId).ToList();

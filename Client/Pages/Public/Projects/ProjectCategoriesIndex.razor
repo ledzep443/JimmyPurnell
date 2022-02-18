@@ -1,4 +1,9 @@
-﻿
+﻿@page "/portfolio/{CategoryName}"
+
+<Client.Components.Public.Shared.Navbar />
+
+
+<Client.Components.Public.Shared.Footer />
 @code {
     [Parameter] public string CategoryName { get; set; }
     [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }

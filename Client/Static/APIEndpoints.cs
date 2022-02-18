@@ -10,7 +10,8 @@
 
         internal readonly static string s_categories = $"{ServerBaseUrl}/api/blogcategories";
         internal readonly static string s_categoriesWithPosts = $"{ServerBaseUrl}/api/blogcategories/withposts";
-        internal readonly static string s_projectCategories = $"{ServerBaseUrl}/api/projectscategories";
+        internal readonly static string s_projectCategories = $"{ServerBaseUrl}/api/projectcategories";
+        internal readonly static string s_projectCategoriesWithProjects = $"{ServerBaseUrl}/api/projectcategories/withprojects";
         internal readonly static string s_posts = $"{ServerBaseUrl}/api/posts";
         internal readonly static string s_postsDTO = $"{ServerBaseUrl}/api/posts/dto";
         internal readonly static string s_projects = $"{ServerBaseUrl}/api/projects";

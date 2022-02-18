@@ -100,6 +100,80 @@ namespace Server.Data
             modelBuilder.Entity<Post>().HasData(postsToSeed);
 
             #endregion
+            #region Project categories seed
+            ProjectCategory[] projectCategoriesToSeed = new ProjectCategory[6];
+
+            for (int i = 1; i < 7; i++)
+            {
+                projectCategoriesToSeed[i - 1] = new ProjectCategory
+                {
+                    ProjectCategoryId = i,
+                    ThumbnailImagePath = "uploads/placeholder.jpg",
+                    Name = $"Category {i}",
+                    Description = $"A description of category {i}"
+                };
+            }
+            #endregion
+            modelBuilder.Entity<ProjectCategory>().HasData(projectCategoriesToSeed);
+
+            modelBuilder.Entity<Project>(
+                entity =>
+                {
+                    entity.HasOne(project => project.Category)
+                    .WithMany(category => category.Projects)
+                    .HasForeignKey("ProjectCategoryId");
+                });
+            #region Seed projects
+            Project[] projectsToSeed = new Project[6];
+            for (int i = 1; i < 7; i++)
+            {
+                string projectTitle = string.Empty;
+                int categoryId = 0;
+
+                switch(i)
+                {
+                    case 1:
+                        projectTitle = "First project";
+                        categoryId = 1;
+                        break;
+                    case 2:
+                        projectTitle = "Second project";
+                        categoryId = 2;
+                        break;
+                    case 3:
+                        projectTitle = "Thrid project";
+                        categoryId = 3;
+                        break;
+                    case 4:
+                        projectTitle = "Fourth project";
+                        categoryId = 4;
+                        break;
+                    case 5:
+                        projectTitle = "Fifth project";
+                        categoryId = 5;
+                        break;
+                    case 6:
+                        projectTitle = "Sixth project";
+                        categoryId = 6;
+                        break;
+                    default:
+                        break;
+                }
+                projectsToSeed[i - 1] = new Project
+                {
+                    Id = i,
+                    ScreenshotImagePath = "uploads/placeholder.jpg",
+                    Name = projectTitle,
+                    ProjectCategoryId = categoryId,
+                    GitHub = "/",
+                    URL = "/",
+                    Description = $"This is the description for project {i}",
+                    PublishDate = DateTime.UtcNow.ToString("dd/MM/yyyy hh:mm")
+                };
+            }
+
+            #endregion
+            modelBuilder.Entity<Project>().HasData(projectsToSeed);
         }
     }
 }

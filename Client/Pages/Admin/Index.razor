@@ -1,6 +1,6 @@
 ﻿@page "/admin"
 
-<AuthorizeView Roles="Administrator">
+<AuthorizeView>
     <Authorized Context="Auth">
         <main class="admin-area-main">
 
@@ -13,7 +13,7 @@
                         <br />
                         <hr />
                         <br />
-                        @if (InMemoryDatabaseCache.Categories == null || InMemoryDatabaseCache.ProjectCategories == null || InMemoryDatabaseCache.Posts == null || InMemoryDatabaseCache.Projects == null)
+                        @if (InMemoryDatabaseCache.Categories == null || InMemoryDatabaseCache.Posts == null)
                         {
                             <LoadingDot />
                         }
@@ -96,13 +96,18 @@
     </NotAuthorized>
 </AuthorizeView>
 @code {
-    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
-    protected override async Task OnInitializedAsync()
-    {
-        if (InMemoryDatabaseCache == null)
-        {
-            await InMemoryDatabaseCache.GetCategoriesFromDatabaseAndCache(true);
-            await InMemoryDatabaseCache.GetProjectCategoriesFromDatabaseAndCache(true);
-        }
-    }
+	[Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+		if (InMemoryDatabaseCache.Categories == null)
+		{
+			await InMemoryDatabaseCache.GetCategoriesFromDatabaseAndCache(true);
+		}
+		if (InMemoryDatabaseCache.ProjectCategories == null)
+		{
+			await InMemoryDatabaseCache.GetProjectCategoriesFromDatabaseAndCache(true);
+		}
+	}
 }
