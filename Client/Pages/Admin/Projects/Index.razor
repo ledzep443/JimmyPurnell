@@ -1,5 +1,81 @@
-﻿<h3>Index</h3>
+﻿@page "/admin/projects"
+@using System.Net;
 
+<AuthorizeView>
+    <Authorized Context="Auth">
+        <main class="admin-area-main">
+            <Client.Components.Admin.Sidebar />
+
+            <div class="admin-area-main container-fluid bg-white">
+                <div class="row g-0">
+                    <div class="col">
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </Authorized>
+    <NotAuthorized>
+        <Client.Components.Admin.SignIn />
+    </NotAuthorized>
+</AuthorizeView>
+ 
+@implements IDisposable
 @code {
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        InMemoryDatabaseCache.OnProjectDataChanged += StateHasChanged;
 
+        if (InMemoryDatabaseCache.Projects == null)
+        {
+            await InMemoryDatabaseCache.GetProjectsFromDatabaseAndCache();
+        }
+    }
+
+    public void Dispose() => InMemoryDatabaseCache.OnProjectDataChanged -= StateHasChanged;
+
+    [Inject] HttpClient HttpClient { get; set; }
+    private bool _attemptingToDeleteAProject = false;
+    private bool _successfullyDeletedAProject = false;
+    private bool _unsuccessfullyTriedToDeleteAProject = false;
+    private string _reasonUnsuccessfullyTriedToDeleteAProject = null;
+    private async void DeleteProject(Project projectToDelete)
+    {
+        _attemptingToDeleteAProject = true;
+
+        HttpResponseMessage response = await HttpClient.DeleteAsync($"{APIEndpoints.s_projects}/{projectToDelete.Id}");
+
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            if (InMemoryDatabaseCache.Projects.Remove(projectToDelete))
+            {
+                _successfullyDeletedAProject = true;
+            }
+            else
+            {
+                _reasonUnsuccessfullyTriedToDeleteAProject = "An unexpected error has occurred. Please try again and if the issue persists please contact the administrator.";
+                _unsuccessfullyTriedToDeleteAProject = true;
+            }
+        }
+        else
+        {
+            _reasonUnsuccessfullyTriedToDeleteAProject = $"The API didn't return a NoContent Http status code. Instead the API returned the status code {response.StatusCode} and gave the following reason for failure {response.ReasonPhrase}.";
+            _unsuccessfullyTriedToDeleteAProject = true;
+        }
+
+        _attemptingToDeleteAProject = false;
+        StateHasChanged();
+    }
+
+    private bool _successfullyPublishedOrUnpublished = false;
+    private bool _unsuccessfullyPublishedOrUnpublished = false;
+    private string _lastPublishedOrUnpublishedProject = null;
+    private async Task MakePublicOrPrivateProject(Project projectToPublishOrUnpublish)
+    {
+        projectToPublishOrUnpublish.IsPublished = !projectToPublishOrUnpublish.IsPublished;
+
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync<Project>($"{APIEndpoints.s_projects}/{projectToPublishOrUnpublish.Id}", projectToPublishOrUnpublish);
+
+    }
 }

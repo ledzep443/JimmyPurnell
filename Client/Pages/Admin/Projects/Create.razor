@@ -1,4 +1,24 @@
-﻿<h3>Create</h3>
+﻿@page "/admin/projects/create"
+@using System.Net;
+
+<AuthorizeView>
+    <Authorized Context="Auth">
+        <main class="admin-area-main">
+            <Client.Components.Admin.Sidebar />
+
+            <div class="admin-area-main container-fluid bg-white">
+                <div class="row g-0">
+                    <div class="col">
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </Authorized>
+    <NotAuthorized>
+        <Client.Components.Admin.SignIn />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 
