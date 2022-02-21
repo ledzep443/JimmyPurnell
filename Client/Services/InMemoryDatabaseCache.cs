@@ -273,7 +273,7 @@ namespace Client.Services
                         }
                     }
 
-                    _projects = projectsFromCategories.OrderByDescending(project => project.Id).ToList();
+                    _projects = projectsFromCategories.OrderByDescending(project => project.ProjectId).ToList();
                 }
 
                 _gettingCategoriesFromDatabaseAndCaching = false;
@@ -305,7 +305,7 @@ namespace Client.Services
             {
                 await GetProjectsFromDatabaseAndCache();
             }
-            return _projects.First(project => project.Id == projectId);
+            return _projects.First(project => project.ProjectId == projectId);
         }
 
         internal async Task<ProjectDTO> GetProjectDTOByProjectId(int projectId) => await _httpClient.GetFromJsonAsync<ProjectDTO>($"{APIEndpoints.s_projectsDTO}/{projectId}");
@@ -324,7 +324,7 @@ namespace Client.Services
 
                 List<Project> projectsFromDatabase = await _httpClient.GetFromJsonAsync<List<Project>>(APIEndpoints.s_projects);
 
-                _projects = projectsFromDatabase.OrderByDescending(project => project.Id).ToList();
+                _projects = projectsFromDatabase.OrderByDescending(project => project.ProjectId).ToList();
 
                 _gettingProjectsFromDatabaseAndCaching = false;
             }

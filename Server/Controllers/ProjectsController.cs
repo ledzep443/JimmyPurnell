@@ -102,7 +102,7 @@ namespace Server.Controllers
         {
             try
             {
-                if (id < 1 || updatedProjectDTO == null || id != updatedProjectDTO.Id)
+                if (id < 1 || updatedProjectDTO == null || id != updatedProjectDTO.ProjectId)
                 {
                     return BadRequest(ModelState);
                 }
@@ -169,7 +169,7 @@ namespace Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                bool exists = await _appDbContext.Projects.AnyAsync(project => project.Id == id);
+                bool exists = await _appDbContext.Projects.AnyAsync(project => project.ProjectId == id);
 
                 if (exists == false)
                 {
@@ -226,7 +226,7 @@ namespace Server.Controllers
         {
             Project projectToGet = await _appDbContext.Projects
                 .Include(project => project.Category)
-                .FirstAsync(project => project.Id == projectId);
+                .FirstAsync(project => project.ProjectId == projectId);
 
             return projectToGet;
         }

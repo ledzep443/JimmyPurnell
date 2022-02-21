@@ -161,7 +161,7 @@ namespace Server.Data
                 }
                 projectsToSeed[i - 1] = new Project
                 {
-                    Id = i,
+                    ProjectId = i,
                     ScreenshotImagePath = "uploads/placeholder.jpg",
                     Name = projectTitle,
                     ProjectCategoryId = categoryId,

@@ -7,7 +7,7 @@ namespace Shared.Models
     public class ProjectDTO
     {
         [Key]
-        public int Id { get; set; }
+        public int ProjectId { get; set; }
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
