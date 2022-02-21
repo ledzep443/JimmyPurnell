@@ -1,5 +1,177 @@
-﻿<h3>Update</h3>
+﻿@page "/admin/blogcategories/update/{CategoryId:int}"
+@using System.Net;
+
+<AuthorizeView>
+    <Authorized Context="Auth">
+        <main class="admin-area-main">
+            <Client.Components.Admin.Sidebar />
+
+            <div class="admin-area-content container-fluid bg-white">
+                <div class="row g-0">
+                    <div class="col">
+
+                        <h1 class="mb-4">Update Category</h1>
+
+                        @if (_blogCategoryToUpdate == null || _attemptingToUpdate == true)
+                        {
+                            <LoadingDot />
+                        }
+                        else
+                        {
+                            <EditForm Model="_blogCategoryToUpdate" OnValidSubmit="UpdateCategory">
+                                <DataAnnotationsValidator />
+
+                                <div class="form-group mb-5">
+                                    <label for="categoryName">Category name</label>
+                                    <InputText @bind-Value="_blogCategoryToUpdate.Name" class="form-control" id="categoryName"></InputText>
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="thumbnailImage">Thumbnail image (jpg/jpeg or png 1920x1080)</label>
+
+                                    @if (_attemptingToUploadImage == true)
+                                    {
+                                        <LoadingDot />
+                                    }
+                                    else if (_attemptToUploadFailed == true)
+                                    {
+                                        <h4 class="text-danger">Failed to upload image. @_reasonImageUploadFailed</h4>
+                                    }
+                                    else
+                                    {
+                                        <img src="@($"{APIEndpoints.ServerBaseUrl}/{_blogCategoryToUpdate.ThumbnailImagePath}")" class="admin-crud-form-thumbnail-image" alt="Post thumbnail image" />
+                                    }
+
+                                    <br />
+
+                                    <InputFile OnChange="HandleUploadImage" class="form-control mt-4" id="thumbnailImage" />
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="categoryDescription">Category description</label>
+                                    <InputText @bind-Value="_blogCategoryToUpdate.Description" class="form-control" id="categoryDescription"></InputText>
+                                </div>
+
+                                <ValidationSummary />
+
+                                <button class="btn btn-success shadow d-block mt-5 md-f-size-1-5" type="submit">
+                                    <i class="far fa-save"></i> Save
+                                </button>
+
+                                <a href="/admin/blogcategories" class="btn btn-primary shadow mt-5 md-f-size-1-5">
+                                    <i class="fas fa-arrow-left"></i> Back to all categories    
+                                </a>
+
+                            </EditForm>
+                        }
+
+                        <div class="position-fixed bottom-0 end-5 z-index-5">
+
+                            @if (_updateSuccessful == true)
+                            {
+                                <Toast IsError="false" ToastTitle="Update successful"
+                                ToastBody="Your changes have been saved to the database"
+                                ParentMethodToCallOnClickBtnClose="() => _updateSuccessful = false" />
+                            }
+
+                            @if (_attemptToUpdateFailed == true)
+                            {
+                                <Toast IsError="true" ToastTitle="Update failed"
+                                ToastBody="Update failed. Please try again and if the problem persists please contact the administrator."
+                                ParentMethodToCallOnClickBtnClose="() => _attemptToUpdateFailed = false" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </Authorized>
+    <NotAuthorized>
+        <Client.Components.Admin.SignIn />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
+    [Parameter] public int CategoryId { get; set; }
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    private BlogCategory _blogCategoryToUpdate = null;
+    protected async override Task OnParametersSetAsync()
+    {
+        _blogCategoryToUpdate = await InMemoryDatabaseCache.GetCategoryByCategoryId(CategoryId, false);
+    }
 
+    [Inject] HttpClient HttpClient { get; set; }
+    private bool _attemptingToUpdate = false;
+    private bool _attemptToUpdateFailed = false;
+    private bool _updateSuccessful = false;
+    private async Task UpdateCategory()
+    {
+        _attemptingToUpdate = true;
+
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync<BlogCategory>($"{APIEndpoints.s_categories}/{CategoryId}", _blogCategoryToUpdate);
+
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            BlogCategory unupdatedCategoryInList = InMemoryDatabaseCache.Categories.Single(blogCategory => blogCategory.CategoryId == CategoryId);
+            UtilityFunctions.CopyObjectProperties(_blogCategoryToUpdate, unupdatedCategoryInList);
+
+            _updateSuccessful = true;
+        }
+        else
+        {
+            _attemptToUpdateFailed = true;
+        }
+        _attemptingToUpdate = false;
+    }
+
+    private bool _attemptingToUploadImage = false;
+    private bool _attemptToUploadFailed = false;
+    private string _reasonImageUploadFailed = null;
+    private async Task HandleUploadImage(InputFileChangeEventArgs e)
+    {
+        _attemptingToUploadImage = true;
+
+        if (e.File.ContentType != "image/jpeg" && e.File.ContentType != "image/png")
+        {
+            _reasonImageUploadFailed = "Please only upload JPEG, JPG, or PNG images.";
+            _attemptToUploadFailed = true;
+        }
+        else if (e.File.Size >= 31457280) // 31457280 bytes is 30MB
+        {
+            _reasonImageUploadFailed = "Please only upload images that are smaller than 30 MegaBytes (MB).";
+            _attemptToUploadFailed = true;
+        }
+        else
+        {
+            IBrowserFile uploadedImageFile = e.File;
+
+            byte[] imageAsByteArray = new byte[uploadedImageFile.Size];
+
+            //Fills the image byte array
+            await uploadedImageFile.OpenReadStream(31457280).ReadAsync(imageAsByteArray);
+            string byteString = Convert.ToBase64String(imageAsByteArray);
+
+            UploadedImage uploadedImage = new UploadedImage()
+                {
+                    NewImageFileExtension = uploadedImageFile.Name.Substring(uploadedImageFile.Name.Length - 4),
+                    NewImageBase64Content = byteString,
+                    OldImagePath = string.Empty
+                };
+
+            HttpResponseMessage response = await HttpClient.PostAsJsonAsync<UploadedImage>(APIEndpoints.s_imageUpload, uploadedImage);
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                _blogCategoryToUpdate.ThumbnailImagePath = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                _reasonImageUploadFailed = $"Something went wrong when making a request to the server. Server response code: {response.StatusCode}. Server reason: {response.ReasonPhrase}.";
+                _attemptToUploadFailed = true;
+            }
+        }
+
+        _attemptingToUploadImage = false;
+        StateHasChanged();
+    }
 }
