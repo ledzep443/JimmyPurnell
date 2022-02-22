@@ -1,4 +1,4 @@
-﻿@page "/admin/projectcategories/update"
+﻿@page "/admin/projectcategories/update/{ProjectCategoryId:int}"
 @using System.Net;
 
 <AuthorizeView>
@@ -10,6 +10,75 @@
                 <div class="row g-0">
                     <div class="col">
 
+                        <h1 class="mb-4">Update project category</h1>
+
+                        @if(_categoryToUpdate == null || _attemptingToUpdate == true)
+                        {
+                            <LoadingDot />
+                        }
+                        else
+                        {
+                           <EditForm Model="_categoryToUpdate" OnValidSubmit="UpdateProjectCategory">
+                               <DataAnnotationsValidator />
+
+                               <div class="form-group mb-5">
+                                   <label for="categoryName">Category Name</label>
+                                   <InputText @bind-Value="_categoryToUpdate.Name" class="form-control" id="categoryName"></InputText>
+                               </div>
+
+                               <div class="form-group mb-5">
+                                   <label for="thumbnailImage">Thumbnail image (jpg/jpeg or png 1920x1080)</label>
+
+                                    @if (_attemptingToUploadImage == true)
+                                    {
+                                        <LoadingDot />
+                                    }
+                                    else if (_attemptToUploadFailed == true)
+                                    {
+                                        <h4 class="text-danger">Failed to upload image. @_reasonImageUploadFailed</h4>
+                                    }
+                                    else
+                                    {
+                                        <img src="@($"{APIEndpoints.ServerBaseUrl}/{_categoryToUpdate.ThumbnailImagePath}")" class="admin-crud-form-thumbnail-image" alt="Project category thumbnail image" />
+                                    }
+
+                                    <br />
+                                    <InputFile OnChange="HandleUploadedImage" class="form-control mt-4" id="thumbnailImage" />
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="categoryDescription">Category description</label>
+                                    <InputText @bind-Value="_categoryToUpdate.Description" class="form-control" id="categoryDescription"></InputText>
+                                </div>
+
+                                <ValidationSummary />
+
+                                <button class="btn btn-success shadow d-block mt-5 md-f-size-1-5" type="submit">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+
+                                <a href="/admin/projectcategories" class="btn btn-primary shadow mt-5 md-f-size-1-5">
+                                    <i class="fas fa-arrow-left"></i> Back to all project categories    
+                                </a>
+                           </EditForm>
+                        }
+
+                        <div class="position-fixed bottom-0 end-5 z-index-5">
+
+                            @if (_updateSuccessful == true)
+                            {
+                                <Toast IsError="false" ToastTitle="Update successful"
+                                ToastBody="Your changes have been saved to the database."
+                                ParentMethodToCallOnClickBtnClose="() => _updateSuccessful = false" />
+                            }
+
+                            @if (_attemptToUpdateFailed == true)
+                            {
+                                <Toast IsError="true" ToastTitle="Update failed"
+                                ToastBody="Update failed. Please try again and if the issue persists contact the administrator."
+                                ParentMethodToCallOnClickBtnClose="() => _attemptToUpdateFailed = false" />
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -21,5 +90,86 @@
 </AuthorizeView>
 
 @code {
+    [Parameter] public int ProjectCategoryId { get; set; }
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    private ProjectCategory _categoryToUpdate = null;
+    protected async override Task OnParametersSetAsync()
+    {
+        _categoryToUpdate = await InMemoryDatabaseCache.GetProjectCategoryByCategoryId(ProjectCategoryId, false);
+    }
 
+    [Inject] HttpClient HttpClient { get; set; }
+    private bool _attemptingToUpdate = false;
+    private bool _attemptToUpdateFailed = false;
+    private bool _updateSuccessful = false;
+    private async Task UpdateProjectCategory()
+    {
+        _attemptingToUpdate = true;
+
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync<ProjectCategory>($"{APIEndpoints.s_projectCategories}/{ProjectCategoryId}", _categoryToUpdate);
+
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            ProjectCategory unupdatedProjectCategoryInList = InMemoryDatabaseCache.ProjectCategories.Single(category => category.ProjectCategoryId == ProjectCategoryId);
+            UtilityFunctions.CopyObjectProperties(_categoryToUpdate, unupdatedProjectCategoryInList);
+
+            _updateSuccessful = true;
+        }
+        else
+        {
+            _attemptToUpdateFailed = true;
+        }
+        _attemptingToUpdate = false;
+    }
+
+    private bool _attemptingToUploadImage = false;
+    private bool _attemptToUploadFailed = false;
+    private string _reasonImageUploadFailed = null;
+    private async Task HandleUploadedImage(InputFileChangeEventArgs e)
+    {
+        _attemptingToUploadImage = true;
+
+        if (e.File.ContentType != "image/jpg" && e.File.ContentType != "image/png")
+        {
+            _reasonImageUploadFailed = "Please only upload JPEG, JPG, or PNG images.";
+            _attemptToUploadFailed = true;
+        }
+        else if (e.File.Size >= 31457280) // 30MB in bytes
+        {
+            _reasonImageUploadFailed = "Please only upload images smaller than 30 MegaBytes (MB).";
+            _attemptToUploadFailed = true;
+        } 
+        else
+        {
+            IBrowserFile uploadedImageFile = e.File;
+
+            byte[] imageAsByteArray = new byte[uploadedImageFile.Size];
+
+            //Fills the imageAsByteArray with the uploaded image data, then converts to a Base64 string to store in database
+            await uploadedImageFile.OpenReadStream(31457280).ReadAsync(imageAsByteArray);
+            string byteString = Convert.ToBase64String(imageAsByteArray);
+
+            UploadedImage uploadedImage = new UploadedImage()
+            {
+                    NewImageFileExtension = uploadedImageFile.Name.Substring(uploadedImageFile.Name.Length - 4),
+                    NewImageBase64Content = byteString,
+                    OldImagePath = string.Empty
+            };
+
+            HttpResponseMessage response = await HttpClient.PostAsJsonAsync<UploadedImage>(APIEndpoints.s_imageUpload, uploadedImage);
+
+            if(response.StatusCode == HttpStatusCode.Created)
+            {
+                _categoryToUpdate.ThumbnailImagePath = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                _reasonImageUploadFailed = $"Something went wrong when making a request to the server. Server response code: {response.StatusCode} Server reason: {response.ReasonPhrase}.";
+                _attemptToUploadFailed = true;
+            }
+        }
+
+        _attemptingToUploadImage = false;
+        StateHasChanged();
+    }
 }
