@@ -6,10 +6,104 @@
         <main class="admin-area-main">
             <Client.Components.Admin.Sidebar />
 
-            <div class="admin-area-main container-fluid bg-white">
+            <div class="admin-area-content container-fluid bg-white">
                 <div class="row g-0">
                     <div class="col">
 
+                        <h1 class="mb-4">Create project</h1>
+
+                        @if (_attemptingToCreate == true)
+                        {
+                            <h1>Creating project...</h1>
+                            <LoadingDot />
+                        }
+                        else if (_createSuccessful == false && _attemptingToCreate == false)
+                        {
+                            <EditForm Model="_projectToCreate" OnValidSubmit="CreateProject">
+                                <DataAnnotationsValidator />
+
+                                @if (InMemoryDatabaseCache.ProjectCategories == null)
+                                {
+                                    <LoadingDot />
+                                }
+                                else
+                                {
+                                    <div class="form-group mb-5">
+                                        <label for="projectCategory">Category</label>
+                                        <InputSelect @bind-Value="@_projectToCreate.ProjectCategoryId" class="form-control" id="projectCategory">
+                                            @foreach (var category in InMemoryDatabaseCache.ProjectCategories)
+                                            {
+                                                <option value="@category.ProjectCategoryId">@category.Name</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                }
+
+                                <div class="form-group mb-5">
+                                    <label for="projectName">Project name</label>
+                                    <InputText @bind-Value="_projectToCreate.Name" class="form-control" id="projectName"></InputText>
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="screenshotImage">Screenshot image (jpg/jpeg or png 1920x1080)</label>
+
+                                    @if (_attemptingToUploadImage == true)
+                                    {
+                                        <LoadingDot />
+                                    }
+                                    else if (_attemptToUploadFailed == true)
+                                    {
+                                        <h4 class="text-danger">Failed to upload image. @_reasonImageUploadFailed</h4>
+                                    }
+                                    else
+                                    {
+                                        <img src="@($"{APIEndpoints.ServerBaseUrl}/{_projectToCreate.ScreenshotImagePath}")" class="admin-crud-form-thumbnail-image" alt="Project screenshot image" />
+                                    }
+
+                                    <br />
+
+                                    <InputFile OnChange="HandleUploadedImage" class="form-control mt-4" id="screenshotImage" />
+
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="projectURL">Project URL</label>
+                                    <InputText @bind-Value="_projectToCreate.URL" class="form-control" id="projectURL"></InputText>
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="projectGitHub">Project GitHub</label>
+                                    <InputText @bind-Value="_projectToCreate.GitHub" class="form-control" id="projectGitHub"></InputText>
+                                </div>
+
+                                <div class="form-group mb-5 flex-shrink-1">
+                                    <label>Project description</label>
+                                    <div @ref="_quillJSEditorDiv" class="border border-secondary p-4"></div>
+                                </div>
+
+                                <div class="form-group mb-5">
+                                    <label for="projectPublished">Project published</label>
+                                    <InputCheckbox @bind-Value="@_projectToCreate.IsPublished" class="form-check-input" id="projectPublished" aria-describedby="projectPublishedHelp" />
+                                    <div id="projectPublishedHelp" class="form-text">
+                                        The value of this specifies whether this project is visible on the user facing site or not. Publishing a project also updates the value of the PublishDate field.
+                                    </div>
+                                </div>
+
+                                <ValidationSummary />
+
+                               
+                                <button class="btn btn-success shadow d-block mt-5 md-f-size-1-5" type="submit">
+                                    <i class="far fa-save"></i> Save
+                                </button>
+
+                                    
+                                
+                            </EditForm>
+                        }
+                        <a href="/admin/projects" class="btn btn-primary shadow mt-5 md-f-size-1-5">
+                            <i class="fas fa-arrow-left"></i> Back to all projects    
+                        </a>
+                       
                     </div>
                 </div>
             </div>
@@ -22,4 +116,100 @@
 
 @code {
 
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    private ElementReference _quillJSEditorDiv;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if(InMemoryDatabaseCache.ProjectCategories == null)
+            {
+                await InMemoryDatabaseCache.GetProjectCategoriesFromDatabaseAndCache(false);
+                StateHasChanged();
+            }
+
+            await JSRuntime.InvokeVoidAsync("QuillFunctions.setQuillContent", _quillJSEditorDiv);
+
+        }
+    }
+
+    [Inject] HttpClient HttpClient { get; set; }
+    private ProjectDTO _projectToCreate = new ProjectDTO() { ScreenshotImagePath = "uploads/placeholder.jpg" };
+    private bool _attemptingToCreate = false;
+    private bool _attemptToCreateFailed = false;
+    private bool _createSuccessful = false;
+    private async Task CreateProject()
+    {
+        _attemptingToCreate = true;
+
+        _projectToCreate.Description = await JSRuntime.InvokeAsync<string>("QuillFunctions.getQuillContent", _quillJSEditorDiv);
+
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync<ProjectDTO>(APIEndpoints.s_projects, _projectToCreate);
+
+        if (response.StatusCode == HttpStatusCode.Created)
+        {
+            Project addedProject = await response.Content.ReadFromJsonAsync<Project>();
+            addedProject.Category = await InMemoryDatabaseCache.GetProjectCategoryByCategoryId(addedProject.ProjectCategoryId, false);
+            InMemoryDatabaseCache.Projects.Add(addedProject);
+
+            _createSuccessful = true;
+        }
+        else
+        {
+            _attemptToCreateFailed = true;
+        }
+        _attemptingToCreate = false;
+    }
+
+    private bool _attemptingToUploadImage = false;
+    private bool _attemptToUploadFailed = false;
+    private string _reasonImageUploadFailed = null;
+    private async Task HandleUploadedImage(InputFileChangeEventArgs e)
+    {
+        _attemptingToUploadImage = true;
+
+        if (e.File.ContentType != "image/jpeg" && e.File.ContentType != "image/png")
+        {
+            _reasonImageUploadFailed = "Please only upload JPEG, JPG, or PNG images.";
+            _attemptToUploadFailed = true;
+        }
+        else if (e.File.Size >= 31457280) // 31457280 bytes = 30MB
+        {
+            _reasonImageUploadFailed = "Please only upload images that are smaller than 30 MegaBytes (MB).";
+            _attemptToUploadFailed = true;
+        }
+        else
+        {
+            IBrowserFile uploadedImageFile = e.File;
+
+            byte[] imageAsByteArray = new byte[uploadedImageFile.Size];
+
+            // Fills the contents of the image byte array
+            await uploadedImageFile.OpenReadStream(31457280).ReadAsync(imageAsByteArray);
+            string byteString = Convert.ToBase64String(imageAsByteArray);
+
+            UploadedImage uploadedImage = new UploadedImage()
+                {
+                    NewImageFileExtension = uploadedImageFile.Name.Substring(uploadedImageFile.Name.Length - 4),
+                    NewImageBase64Content = byteString,
+                    OldImagePath = string.Empty
+                };
+
+            HttpResponseMessage response = await HttpClient.PostAsJsonAsync<UploadedImage>(APIEndpoints.s_imageUpload, uploadedImage);
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                _projectToCreate.ScreenshotImagePath = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                _reasonImageUploadFailed = $"Something went wrong when making a request to the server. Server response cose: {response.StatusCode}. Server reason: {response.ReasonPhrase}.";
+                _attemptToUploadFailed = true;
+            }
+        }
+
+        _attemptingToUploadImage = false;
+        StateHasChanged();
+    }
 }
