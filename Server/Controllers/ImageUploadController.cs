@@ -7,7 +7,7 @@ namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class ImageUploadController :ControllerBase
     {
         private readonly IWebHostEnvironment _webHostEnvironment;

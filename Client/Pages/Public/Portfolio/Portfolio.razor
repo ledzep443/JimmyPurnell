@@ -1,0 +1,129 @@
+﻿@page "/portfolio"
+@using Client.Components.Public.Shared
+@using Client.Components.Public.Portfolio
+
+<Navbar />
+<main class="container min-vh-90 py-5">
+    <div class="row">
+        <div class="col">
+            <h1 class="my-3">Projects</h1>
+            <p>Click a category card to see its projects</p>
+            <div class="row">
+                @if (InMemoryDatabaseCache.ProjectCategories == null)
+                {
+                    <LoadingDot />
+                }
+                else
+                {
+                    @if (InMemoryDatabaseCache.ProjectCategories.Count < 1)
+                    {
+                        <h3>No categories found</h3>
+                    }
+                    else if (InMemoryDatabaseCache.ProjectCategories.Count < 3)
+					{
+						<div class="row">
+							@foreach (var category in InMemoryDatabaseCache.ProjectCategories)
+							{
+								<div class="col-md-4">
+									<ProjectCategoryCard Category="category" />
+								</div>
+							}
+                        </div>
+                    }
+                    else
+                    {
+                        @if (InMemoryDatabaseCache.ProjectCategories.Count % 3 == 0)
+                        {
+                            @for (int i = 0; i < InMemoryDatabaseCache.ProjectCategories.Count; i += 3)
+                            {
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 1]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 2]" />
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else if (InMemoryDatabaseCache.ProjectCategories.Count % 3 == 2)
+                        {
+                            @for (int i = 0; i < InMemoryDatabaseCache.ProjectCategories.Count - 2; i += 3)
+                            {
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 1]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 2]" />
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="row">
+                                
+                                <div class="col-md-4">
+                                    <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[InMemoryDatabaseCache.ProjectCategories.Count - 2]" />
+                                </div>
+                                <div class="col-md-4">
+                                    <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[InMemoryDatabaseCache.ProjectCategories.Count - 1]" />
+                                </div>
+                            </div>
+                        }
+                        else if (InMemoryDatabaseCache.ProjectCategories.Count % 3 == 1)
+                        {
+                            @for (int i = 0; i < InMemoryDatabaseCache.ProjectCategories.Count - 1; i += 3)
+                            {
+                                 <div class="row">
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 1]" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[i + 2]" />
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ProjectCategoryCard Category="InMemoryDatabaseCache.ProjectCategories[InMemoryDatabaseCache.ProjectCategories.Count - 1]" />
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</main>
+
+<Footer />
+
+@implements IDisposable
+@code {
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        InMemoryDatabaseCache.OnProjectCategoriesDataChanged += StateHasChanged;
+
+        if(InMemoryDatabaseCache.ProjectCategories == null)
+        {
+            await InMemoryDatabaseCache.GetProjectCategoriesFromDatabaseAndCache(true);
+        }
+    }
+
+    public void Dispose()
+    {
+        InMemoryDatabaseCache.OnProjectCategoriesDataChanged -= StateHasChanged;
+    }
+}

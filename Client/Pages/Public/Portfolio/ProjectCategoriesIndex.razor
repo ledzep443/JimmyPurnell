@@ -1,4 +1,5 @@
 ﻿@page "/portfolio/{CategoryName}"
+@using Client.Components.Public.Portfolio
 
 <Client.Components.Public.Shared.Navbar />
 
@@ -14,15 +15,18 @@
     {
         if (_publishedProjects == null)
         {
-
+            await InMemoryDatabaseCache.GetProjectCategoriesFromDatabaseAndCache(false);
         }
-        if (_projectCategory.Projects.Count != 1)
+
+        _projectCategory = await InMemoryDatabaseCache.GetProjectCategoryByCategoryName(CategoryName.ConvertUrlToTitle(), true, true);
+
+        if (_projectCategory.Projects.Count != 0)
         {
-            
+            _publishedProjects = _projectCategory.Projects.Where(project => project.IsPublished == true).ToList();
         }
         else
         {
-            
+            _publishedProjects = new List<Project>();
         }
     }
 }

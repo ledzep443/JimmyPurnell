@@ -1,7 +1,7 @@
 ﻿@page "/admin/blogcategories/create"
 @using System.Net;
 
-<AuthorizeView>
+<AuthorizeView Roles="Administrator">
 	<Authorized Context="Auth">
 		<main class="admin-area-main">
 			<Client.Components.Admin.Sidebar />

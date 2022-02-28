@@ -10,7 +10,7 @@ namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class ProjectsController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;

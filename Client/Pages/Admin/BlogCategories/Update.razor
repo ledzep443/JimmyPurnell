@@ -1,7 +1,7 @@
 ﻿@page "/admin/blogcategories/update/{CategoryId:int}"
 @using System.Net;
 
-<AuthorizeView>
+<AuthorizeView Roles="Administrator">
     <Authorized Context="Auth">
         <main class="admin-area-main">
             <Client.Components.Admin.Sidebar />

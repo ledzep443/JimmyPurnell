@@ -6,11 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Shared.Models;
 
+
 namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class PostsController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;

@@ -8,7 +8,7 @@ namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class BlogCategoriesController : ControllerBase
     {
         private readonly AppDbContext _appDBContext;
@@ -41,6 +41,14 @@ namespace Server.Controllers
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Get(int id)
+        {
+            BlogCategory category = await GetCategoryByCategoryId(id, true);
+
+            return Ok(category);
+        }
+        [HttpGet("withposts/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetWithPosts(int id)
         {
             BlogCategory category = await GetCategoryByCategoryId(id, true);
 

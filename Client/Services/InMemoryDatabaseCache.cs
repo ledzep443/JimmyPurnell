@@ -221,6 +221,32 @@ namespace Client.Services
             return projectCategoryToReturn;
         }
 
+        internal async Task<ProjectCategory> GetProjectCategoryByCategoryName(string categoryName, bool withProjects, bool nameToLowerFromUrl)
+        {
+            if (_projectCategories == null)
+            {
+                await GetProjectCategoriesFromDatabaseAndCache(withProjects);
+            }
+
+            ProjectCategory categoryToReturn = null;
+
+            if(nameToLowerFromUrl == true)
+            {
+                categoryToReturn = _projectCategories.First(category => category.Name.ToLowerInvariant() == categoryName);
+            }
+            else
+            {
+                categoryToReturn = _projectCategories.First(category => category.Name == categoryName);
+            }
+
+            if (categoryToReturn.Projects == null && withProjects == true)
+            {
+                categoryToReturn = await _httpClient.GetFromJsonAsync<ProjectCategory>($"{APIEndpoints.s_projectCategoriesWithProjects}/{categoryToReturn.ProjectCategoryId}");
+            }
+
+            return categoryToReturn;
+        }
+
         private bool _gettingProjectCategoriesFromDatabaseAndCaching = false;
         internal async Task GetProjectCategoriesFromDatabaseAndCache(bool withProjects)
         {

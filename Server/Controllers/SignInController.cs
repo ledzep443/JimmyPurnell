@@ -61,7 +61,7 @@ namespace Server.Controllers
             };
 
             IList<string> roleNames = await _userManager.GetRolesAsync(identityUser);
-            claims.AddRange(roleNames.Select(roleName => new Claim(ClaimsIdentity.DefaultNameClaimType, roleName)));
+            claims.AddRange(roleNames.Select(roleName => new Claim(ClaimsIdentity.DefaultRoleClaimType, roleName)));
 
             JwtSecurityToken jwtSecurityToken = new
             (
@@ -69,7 +69,7 @@ namespace Server.Controllers
                 _configuration["Jwt:Issuer"],
                 claims,
                 null,
-                expires: DateTime.UtcNow.AddDays(28),
+                expires: DateTime.UtcNow.AddMinutes(120),
                 signingCredentials: credentials
             );
 
