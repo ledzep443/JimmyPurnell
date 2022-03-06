@@ -62,7 +62,9 @@
 }
 
 .bg-motherboard-dev {
-    background-image: url("../assets/img/publicbackgrounds/bg-motherboard-dev.jpg");
+    background-image: url("../assets/img/publicbackgrounds/bg-home.jpg");
+    background-size: cover;
+    
 }
 
 .bg-white-94 {
