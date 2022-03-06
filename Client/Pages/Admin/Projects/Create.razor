@@ -129,7 +129,7 @@
                 StateHasChanged();
             }
 
-            await JSRuntime.InvokeVoidAsync("QuillFunctions.setQuillContent", _quillJSEditorDiv);
+            await JSRuntime.InvokeVoidAsync("QuillFunctions.createQuill", _quillJSEditorDiv, true);
 
         }
     }
@@ -145,7 +145,7 @@
 
         _projectToCreate.Description = await JSRuntime.InvokeAsync<string>("QuillFunctions.getQuillContent", _quillJSEditorDiv);
 
-        HttpResponseMessage response = await HttpClient.PutAsJsonAsync<ProjectDTO>(APIEndpoints.s_projects, _projectToCreate);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync<ProjectDTO>(APIEndpoints.s_projects, _projectToCreate);
 
         if (response.StatusCode == HttpStatusCode.Created)
         {

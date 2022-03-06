@@ -1,5 +1,70 @@
-﻿<h3>Project</h3>
+﻿@page "/portfolio/{CategoryName}/{ProjectName}"
+@using Client.Components.Public.Shared
+
+<Navbar />
+
+<main class="container min-vh-90 py-5">
+    @if (_category == null || _project == null)
+    {
+        <LoadingDot />
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12 px-md-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb md-f-size-1-5">
+                        <li class="breadcrumb-item"><a href="/portfolio">Portfolio</a></li>
+                        <li class="breadcrumb-item"><a href="@($"/portfolio/{CategoryName}")">@_category.Name</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@_project.Name</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="col-12 shadow-no-hover py-5 px-md-5 mt-3">
+                <article class="portfolio-project">
+                    <h2 class="fst-italic">@_project.Name</h2>
+                </article>
+            </div>
+        </div>
+    }
+</main>
 
 @code {
+    [Parameter] public string CategoryName { get; set; }
+    [Parameter] public string ProjectName { get; set; }
+    [Inject] InMemoryDatabaseCache InMemoryDatabaseCache { get; set; }
+    [Inject] HttpClient HttpClient { get; set; }
+    [Inject] IJSRuntime JsRuntime { get; set; }
+    private ProjectCategory _category = null;
+    private Project _project = null;
+    private ElementReference _quillJSReadOnlyEditorDiv;
+    private bool _loadingContent = false;
+    protected override async Task OnParametersSetAsync()
+    {
+        _loadingContent = true;
 
+        _category = await InMemoryDatabaseCache.GetProjectCategoryByCategoryName(CategoryName.ConvertUrlToTitle(), true, true);
+
+        string projectNameFromURL = ProjectName.ConvertUrlToTitle();
+
+        _project = _category.Projects.First(project => project.Name.ToLowerInvariant() == projectNameFromURL);
+
+        StateHasChanged();
+
+        await Task.Delay(500);
+
+        await JsRuntime.InvokeVoidAsync("QuillFunctions.createQuill", _quillJSReadOnlyEditorDiv, false);
+
+        if (string.IsNullOrEmpty(_project.Description) == false)
+        {
+            await JsRuntime.InvokeAsync<object>("QuillFunctions.setQuillContent", _quillJSReadOnlyEditorDiv, _project.Description);
+        }
+
+        await JsRuntime.InvokeAsync<object>("QuillFunctions.disableQuillEditor", _quillJSReadOnlyEditorDiv);
+
+        _loadingContent = false;
+
+        StateHasChanged();
+    }
 }

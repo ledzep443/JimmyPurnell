@@ -3,6 +3,88 @@
 
 <Client.Components.Public.Shared.Navbar />
 
+<main class="container min-vh-90 py-5">
+    <div class="row">
+        <div class="col">
+            @if (_projectCategory == null || _publishedProjects == null)
+            {
+                <LoadingDot />
+            }
+            else
+            {
+                <nav aria-label="breadcrumb" class="ps-3 row md-f-size-1-5">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/portfolio">Portfolio</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@_projectCategory.Name</li>
+                    </ol>
+                </nav>
+
+                <h1 class="my-3">Projects in @_projectCategory.Name</h1>
+
+                @if (_publishedProjects.Count < 1)
+                {
+                    <h3>No projects found</h3>
+                }
+                else if (_publishedProjects.Count < 3)
+                {
+                    <div class="row">
+                        @foreach (var project in _publishedProjects)
+                        {
+                            <div class="col-md-4">
+                                <ProjectCard Category="_projectCategory" Project="project" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    @if (_publishedProjects.Count % 3 == 0)
+                    {
+                        @for (int i = 0; i < _publishedProjects.Count; i += 3)
+                        {
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i]" />
+                                </div>
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i + 1]" />
+                                </div>
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i + 2]" />
+                                </div>
+                            </div>
+                        }
+                    }
+                    else if (_publishedProjects.Count % 3 == 2)
+                    {
+                        @for (int i = 0; i < _publishedProjects.Count - 2; i += 3)
+                        {
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i]" />
+                                </div>
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i + 1]" />
+                                </div>
+                                <div class="col-md-4">
+                                    <ProjectCard Category="_projectCategory" Project="_publishedProjects[i + 2]" />
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-md-4">
+                                <ProjectCard Category="_projectCategory" Project="_publishedProjects[_publishedProjects.Count - 2]" />
+                            </div>
+                            <div class="col-md-4">
+                                <ProjectCard Category="_projectCategory" Project="_publishedProjects[_publishedProjects.Count - 1]" />
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+</main>
 
 <Client.Components.Public.Shared.Footer />
 @code {
