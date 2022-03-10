@@ -5,7 +5,7 @@
 #if DEBUG
         internal const string ServerBaseUrl = "https://localhost:7245";
 #else
-        internal const string ServerBaseUrl = "";
+        internal const string ServerBaseUrl = "https://jimmypurnellbackend.azurewebsites.net";
 #endif
 
         internal readonly static string s_categories = $"{ServerBaseUrl}/api/blogcategories";
