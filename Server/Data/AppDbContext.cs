@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
 
+
 namespace Server.Data
 {
     public class AppDbContext : IdentityDbContext
@@ -12,6 +13,14 @@ namespace Server.Data
         public DbSet<Project> Projects { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {  }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseNpgsql("");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

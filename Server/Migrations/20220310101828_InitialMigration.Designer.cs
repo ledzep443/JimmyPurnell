@@ -4,37 +4,42 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Data;
 
 #nullable disable
 
-namespace Server.Data.Migrations
+namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220210113828_AddIdentityUser")]
-    partial class AddIdentityUser
+    [Migration("20220310101828_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.2");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -49,17 +54,19 @@ namespace Server.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -71,54 +78,54 @@ namespace Server.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -136,17 +143,19 @@ namespace Server.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -159,18 +168,18 @@ namespace Server.Data.Migrations
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderKey")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -182,10 +191,10 @@ namespace Server.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -197,48 +206,50 @@ namespace Server.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.Models.Category", b =>
+            modelBuilder.Entity("Shared.Models.BlogCategory", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryId"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ThumbnailImagePath")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("BlogCategories");
 
                     b.HasData(
                         new
@@ -289,43 +300,45 @@ namespace Server.Data.Migrations
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PostId"));
 
                     b.Property<string>("Author")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(65536)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(65536)");
 
                     b.Property<string>("Excerpt")
                         .IsRequired()
                         .HasMaxLength(512)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("PublishDate")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<bool>("Published")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ThumbnailImagePath")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("PostId");
 
@@ -341,7 +354,7 @@ namespace Server.Data.Migrations
                             CategoryId = 1,
                             Content = "",
                             Excerpt = "This is the excerpt for post 1",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "First Post"
@@ -353,7 +366,7 @@ namespace Server.Data.Migrations
                             CategoryId = 2,
                             Content = "",
                             Excerpt = "This is the excerpt for post 2",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Second Post"
@@ -365,7 +378,7 @@ namespace Server.Data.Migrations
                             CategoryId = 3,
                             Content = "",
                             Excerpt = "This is the excerpt for post 3",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Third Post"
@@ -377,7 +390,7 @@ namespace Server.Data.Migrations
                             CategoryId = 4,
                             Content = "",
                             Excerpt = "This is the excerpt for post 4",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Fourth Post"
@@ -389,7 +402,7 @@ namespace Server.Data.Migrations
                             CategoryId = 5,
                             Content = "",
                             Excerpt = "This is the excerpt for post 5",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Fifth Post"
@@ -401,10 +414,202 @@ namespace Server.Data.Migrations
                             CategoryId = 6,
                             Content = "",
                             Excerpt = "This is the excerpt for post 6",
-                            PublishDate = "10/02/2022 11:38",
+                            PublishDate = "10/03/2022 10:18",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Sixth Post"
+                        });
+                });
+
+            modelBuilder.Entity("Shared.Models.Project", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GitHub")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("ProjectCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublishDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ScreenshotImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("URL")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ProjectId");
+
+                    b.HasIndex("ProjectCategoryId");
+
+                    b.ToTable("Projects");
+
+                    b.HasData(
+                        new
+                        {
+                            ProjectId = 1,
+                            Description = "This is the description for project 1",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "First project",
+                            ProjectCategoryId = 1,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        },
+                        new
+                        {
+                            ProjectId = 2,
+                            Description = "This is the description for project 2",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "Second project",
+                            ProjectCategoryId = 2,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        },
+                        new
+                        {
+                            ProjectId = 3,
+                            Description = "This is the description for project 3",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "Thrid project",
+                            ProjectCategoryId = 3,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        },
+                        new
+                        {
+                            ProjectId = 4,
+                            Description = "This is the description for project 4",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "Fourth project",
+                            ProjectCategoryId = 4,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        },
+                        new
+                        {
+                            ProjectId = 5,
+                            Description = "This is the description for project 5",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "Fifth project",
+                            ProjectCategoryId = 5,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        },
+                        new
+                        {
+                            ProjectId = 6,
+                            Description = "This is the description for project 6",
+                            GitHub = "/",
+                            IsPublished = false,
+                            Name = "Sixth project",
+                            ProjectCategoryId = 6,
+                            PublishDate = "10/03/2022 10:18",
+                            ScreenshotImagePath = "uploads/placeholder.jpg",
+                            URL = "/"
+                        });
+                });
+
+            modelBuilder.Entity("Shared.Models.ProjectCategory", b =>
+                {
+                    b.Property<int>("ProjectCategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectCategoryId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ThumbnailImagePath")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("ProjectCategoryId");
+
+                    b.ToTable("ProjectCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            ProjectCategoryId = 1,
+                            Description = "A description of category 1",
+                            Name = "Category 1",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
+                        },
+                        new
+                        {
+                            ProjectCategoryId = 2,
+                            Description = "A description of category 2",
+                            Name = "Category 2",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
+                        },
+                        new
+                        {
+                            ProjectCategoryId = 3,
+                            Description = "A description of category 3",
+                            Name = "Category 3",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
+                        },
+                        new
+                        {
+                            ProjectCategoryId = 4,
+                            Description = "A description of category 4",
+                            Name = "Category 4",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
+                        },
+                        new
+                        {
+                            ProjectCategoryId = 5,
+                            Description = "A description of category 5",
+                            Name = "Category 5",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
+                        },
+                        new
+                        {
+                            ProjectCategoryId = 6,
+                            Description = "A description of category 6",
+                            Name = "Category 6",
+                            ThumbnailImagePath = "uploads/placeholder.jpg"
                         });
                 });
 
@@ -461,7 +666,7 @@ namespace Server.Data.Migrations
 
             modelBuilder.Entity("Shared.Models.Post", b =>
                 {
-                    b.HasOne("Shared.Models.Category", "Category")
+                    b.HasOne("Shared.Models.BlogCategory", "Category")
                         .WithMany("Posts")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -470,9 +675,25 @@ namespace Server.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Shared.Models.Category", b =>
+            modelBuilder.Entity("Shared.Models.Project", b =>
+                {
+                    b.HasOne("Shared.Models.ProjectCategory", "Category")
+                        .WithMany("Projects")
+                        .HasForeignKey("ProjectCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Shared.Models.BlogCategory", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("Shared.Models.ProjectCategory", b =>
+                {
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }

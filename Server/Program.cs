@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+    options.UseNpgsql(builder.Configuration["ConnectionStrings:DefaultConnection"]));
 
 // Also adds RoleManager<IdentityRole> roleManager and UserManager<IdentityUser> userManager to Dependency Injection.
 builder.Services.AddDefaultIdentity<IdentityUser>()
@@ -75,7 +75,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     
 }
+/*using (var serviceScope = app.Services.CreateScope())
+{
+    var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
+    SeedAdministratorRoleAndUser.Seed(roleManager, userManager).Wait();
+}*/
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Server v1"));
 
