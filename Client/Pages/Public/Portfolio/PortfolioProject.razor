@@ -26,7 +26,13 @@
                     <h2 class="fst-italic">@_project.Name</h2>
                     <hr />
                     <img src=@($"{APIEndpoints.ServerBaseUrl}/{_project.ScreenshotImagePath}") class="img-responsive w-90" alt="Project screenshot" />
-                     <div @ref="_quillJSReadOnlyEditorDiv" class="p-0 mt-5"></div>
+                    <div @ref="_quillJSReadOnlyEditorDiv" class="p-0 mt-5"></div>
+                    <a href="@_project.GitHub" class="btn btn-large mx-5 bg-dark text-white mt-3 shadow">
+                        <i class="fab fa-github-square"></i>Github repo
+                    </a>
+                    <a href="@_project.URL" class="btn btn-large mx-5 btn-primary mt-3 shadow">
+                        <i class="fas fa-laptop-code"></i>Live demo
+                    </a>
                 </article>
             </div>
         </div>
