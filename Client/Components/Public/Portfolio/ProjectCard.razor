@@ -3,7 +3,7 @@
     <div class="card-body">
         <h3 class="card-title">@Project.Name</h3>
         <p class="text-muted">Added on @Project.PublishDate.Split(' ').First()</p>
-        <p class="card-text">@Project.Description</p>
+        <p class="card-text">@Project.DescriptionExcerpt</p>
     </div>
 
     <a href="@($"/portfolio/{Category.Name.ConvertTitleToURL().ToLowerInvariant()}/{Project.Name.ConvertTitleToURL().ToLowerInvariant()}")" class="btn btn-primary stretched-link md-f-size-1-5">

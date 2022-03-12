@@ -18,7 +18,7 @@ namespace Server.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("");
+                optionsBuilder.UseNpgsql(@"postgres://pzewudzghajqgc:02340311e9955a46a69cfc3cee347bd2d4ebfe6dd61313138d7bbac81f0d0ad2@ec2-18-210-191-5.compute-1.amazonaws.com:5432/d1cstgtq5eup4f");
             }
         }
 
@@ -177,6 +177,7 @@ namespace Server.Data
                     GitHub = "/",
                     URL = "/",
                     Description = $"This is the description for project {i}",
+                    DescriptionExcerpt = $"This is the description excerpt for project {i}",
                     PublishDate = DateTime.UtcNow.ToString("dd/MM/yyyy hh:mm")
                 };
             }

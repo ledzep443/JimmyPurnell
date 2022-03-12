@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Data;
@@ -11,9 +12,10 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220312111553_AddedDescriptionExcerptToProject")]
+    partial class AddedDescriptionExcerptToProject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -352,7 +354,7 @@ namespace Server.Migrations
                             CategoryId = 1,
                             Content = "",
                             Excerpt = "This is the excerpt for post 1",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "First Post"
@@ -364,7 +366,7 @@ namespace Server.Migrations
                             CategoryId = 2,
                             Content = "",
                             Excerpt = "This is the excerpt for post 2",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Second Post"
@@ -376,7 +378,7 @@ namespace Server.Migrations
                             CategoryId = 3,
                             Content = "",
                             Excerpt = "This is the excerpt for post 3",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Third Post"
@@ -388,7 +390,7 @@ namespace Server.Migrations
                             CategoryId = 4,
                             Content = "",
                             Excerpt = "This is the excerpt for post 4",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Fourth Post"
@@ -400,7 +402,7 @@ namespace Server.Migrations
                             CategoryId = 5,
                             Content = "",
                             Excerpt = "This is the excerpt for post 5",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Fifth Post"
@@ -412,7 +414,7 @@ namespace Server.Migrations
                             CategoryId = 6,
                             Content = "",
                             Excerpt = "This is the excerpt for post 6",
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             Published = true,
                             ThumbnailImagePath = "uploads/placeholder.jpg",
                             Title = "Sixth Post"
@@ -428,10 +430,6 @@ namespace Server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProjectId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DescriptionExcerpt")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -473,12 +471,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 1,
                             Description = "This is the description for project 1",
-                            DescriptionExcerpt = "This is the description excerpt for project 1",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "First project",
                             ProjectCategoryId = 1,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         },
@@ -486,12 +483,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 2,
                             Description = "This is the description for project 2",
-                            DescriptionExcerpt = "This is the description excerpt for project 2",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "Second project",
                             ProjectCategoryId = 2,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         },
@@ -499,12 +495,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 3,
                             Description = "This is the description for project 3",
-                            DescriptionExcerpt = "This is the description excerpt for project 3",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "Thrid project",
                             ProjectCategoryId = 3,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         },
@@ -512,12 +507,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 4,
                             Description = "This is the description for project 4",
-                            DescriptionExcerpt = "This is the description excerpt for project 4",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "Fourth project",
                             ProjectCategoryId = 4,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         },
@@ -525,12 +519,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 5,
                             Description = "This is the description for project 5",
-                            DescriptionExcerpt = "This is the description excerpt for project 5",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "Fifth project",
                             ProjectCategoryId = 5,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         },
@@ -538,12 +531,11 @@ namespace Server.Migrations
                         {
                             ProjectId = 6,
                             Description = "This is the description for project 6",
-                            DescriptionExcerpt = "This is the description excerpt for project 6",
                             GitHub = "/",
                             IsPublished = false,
                             Name = "Sixth project",
                             ProjectCategoryId = 6,
-                            PublishDate = "12/03/2022 11:28",
+                            PublishDate = "12/03/2022 11:15",
                             ScreenshotImagePath = "uploads/placeholder.jpg",
                             URL = "/"
                         });

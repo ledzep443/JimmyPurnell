@@ -81,6 +81,11 @@
                                 </div>
 
                                 <div class="form-group mb-5">
+                                    <label for="projectDescriptionExcerpt">Description Excerpt</label>
+                                    <InputText @bind-Value="_projectToUpdate.DescriptionExcerpt" class="form-control" id="projectDescriptionExcerpt"></InputText>
+                                </div>
+
+                                <div class="form-group mb-5">
                                     <label for="projectPublished">Project published</label>
                                     <InputCheckbox @bind-Value="@_projectToUpdate.IsPublished" class="form-check-input" id="projectPublished" aria-describedby="projectPublishedHelp" />
                                     <div id="projectPublishedHelp" class="form-text">

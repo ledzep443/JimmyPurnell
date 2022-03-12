@@ -81,6 +81,11 @@
                                     <div @ref="_quillJSEditorDiv" class="border border-secondary p-4"></div>
                                 </div>
 
+                                <div class="form-group mb-5 flex-shrink-1">
+                                    <label for="projectDescriptionExcerpt">Description Excerpt</label>
+                                    <InputText @bind-Value="_projectToCreate.DescriptionExcerpt" class="form-control" id="projectDescriptionExcerpt"></InputText>
+                                </div>
+
                                 <div class="form-group mb-5">
                                     <label for="projectPublished">Project published</label>
                                     <InputCheckbox @bind-Value="@_projectToCreate.IsPublished" class="form-check-input" id="projectPublished" aria-describedby="projectPublishedHelp" />

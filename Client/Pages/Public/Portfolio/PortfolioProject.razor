@@ -24,6 +24,9 @@
             <div class="col-12 shadow-no-hover py-5 px-md-5 mt-3">
                 <article class="portfolio-project">
                     <h2 class="fst-italic">@_project.Name</h2>
+                    <hr />
+                    <img src=@($"{APIEndpoints.ServerBaseUrl}/{_project.ScreenshotImagePath}") class="img-responsive w-90" alt="Project screenshot" />
+                     <div @ref="_quillJSReadOnlyEditorDiv" class="p-0 mt-5"></div>
                 </article>
             </div>
         </div>
