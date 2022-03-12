@@ -21,11 +21,11 @@
                 </nav>
             </div>
 
-            <div class="col-12 shadow-no-hover py-5 px-md-5 mt-3">
+            <div class="col-12 shadow-no-hover py-5 px-md-5 mt-3 w-100">
                 <article class="portfolio-project">
                     <h2 class="fst-italic">@_project.Name</h2>
                     <hr />
-                    <img src=@($"{APIEndpoints.ServerBaseUrl}/{_project.ScreenshotImagePath}") class="img-responsive w-90" alt="Project screenshot" />
+                    <img src=@($"{APIEndpoints.ServerBaseUrl}/{_project.ScreenshotImagePath}") class="img-responsive w-90 col-12" alt="Project screenshot" />
                     <div @ref="_quillJSReadOnlyEditorDiv" class="p-0 mt-5"></div>
                     <a href="@_project.GitHub" class="btn btn-large mx-5 bg-dark text-white mt-3 shadow">
                         <i class="fab fa-github-square"></i>Github repo
