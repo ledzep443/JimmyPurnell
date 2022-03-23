@@ -7,18 +7,22 @@ namespace Server.Data
 {
     public class AppDbContext : IdentityDbContext
     {
+        private IConfiguration _config;
         public DbSet<BlogCategory> BlogCategories { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
         public DbSet<Project> Projects { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {  }
+        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options) { 
+            _config = configuration;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var pgSqlConnectionString = _config.GetConnectionString("DefaultConnection");
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql(@"");
+                optionsBuilder.UseNpgsql(pgSqlConnectionString);
             }
         }
 
