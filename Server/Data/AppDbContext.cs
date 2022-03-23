@@ -13,7 +13,8 @@ namespace Server.Data
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
         public DbSet<Project> Projects { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options) { 
+        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options) 
+        { 
             _config = configuration;
         }
 
