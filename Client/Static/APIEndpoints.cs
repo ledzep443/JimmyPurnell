@@ -3,7 +3,7 @@
     internal static class APIEndpoints
     {
 #if DEBUG
-        internal const string ServerBaseUrl = "https://localhost:7245";
+        internal const string ServerBaseUrl = "https://jimmypurnellbackend.azurewebsites.net";
 #else
         internal const string ServerBaseUrl = "https://jimmypurnellbackend.azurewebsites.net";
 #endif
