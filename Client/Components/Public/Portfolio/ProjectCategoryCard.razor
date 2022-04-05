@@ -1,5 +1,5 @@
 ﻿<div class="card shadow mb-2">
-    <img src="@($"{APIEndpoints.ServerBaseUrl}/{Category.ThumbnailImagePath}")"  class="card-img-top img-fluid" style="display: block; max-height: 15vh; width: auto; height: auto; max-width: 100vw;"alt="Category thumbnail image" />
+    <img src="@($"{APIEndpoints.ServerBaseUrl}/{Category.ThumbnailImagePath}")"  class="card-img-top" style="display: block; max-height: 15vh; max-width: 100vw; object-fit:contain; width: auto; height: auto;"alt="Category thumbnail image" />
     <div class="card-body">
         <h3 class="card-title">@Category.Name</h3>
         <p class="card-text">@Category.Description</p>
