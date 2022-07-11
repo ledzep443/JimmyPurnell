@@ -1,0 +1,2 @@
+# Jimmy Purnell .NET Portfolio
+This was the first full-stack .NET application I finished and got working on Azure. It uses ASP.NET core for the API and Blazor WASM for the client front-end. I used Heroku postgreSQL (hobby tier) as a database provider to keep costs at a minimum and is connected to the app through Entity Framework Core using NpgSQL. There is an admin side, and to keep everything simple is part of the client app instead of being it's own site.
